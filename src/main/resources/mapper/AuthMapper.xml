@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sora.modules.grant.mapper.AuthMapper">
+    <resultMap id="BaseResultMap" type="com.sora.modules.grant.entity.Auth">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="path" property="path" jdbcType="VARCHAR"/>
+        <result column="component" property="component" jdbcType="VARCHAR"/>
+        <result column="icon" property="icon" jdbcType="VARCHAR"/>
+        <result column="auth" property="auth" jdbcType="TINYINT"/>
+        <result column="sort" property="sort" jdbcType="BIGINT"/>
+        <result column="enabled" property="enabled" jdbcType="TINYINT"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="pid" property="pid" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+        <collection property="children" column="id" select="findAllByPid"/>
+    </resultMap>
+    <select id="findAllByPid" resultMap="BaseResultMap">
+        select * from auth where pid = #{pid} and enabled = true
+    </select>
+    <select id="findAllByRoleIdIn" resultType="com.sora.modules.grant.entity.Auth">
+        select
+        distinct a.*
+        from auth a inner join role_auth b on a.id = b.auth_id
+        where a.enabled = true and b.role_id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+    <select id="findAll" resultMap="BaseResultMap">
+        select * from auth
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+            and pid = 0
+        </where>
+        order by coalesce(modify_time,create_time) desc
+    </select>
+</mapper>

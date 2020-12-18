@@ -1,0 +1,82 @@
+server:
+  port: 9090
+  shutdown: graceful
+spring:
+  application:
+    name: formal
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/formal?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=GMT%2B8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    connectionProperties:
+      druid:
+        stat:
+          mergeSql: true
+          slowSqlMillis: 5000
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password:
+    timeout: 5000ms
+mybatis-plus:
+  check-config-location: false
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+  type-enums-package: com.sora.common.type
+  global-config:
+    db-config:
+      id-type: auto
+jwt:
+  header: Authorization
+  type: Bearer
+  secure: B2FB7B50A2684A24
+  expire:
+    first: 7200
+    refresh: 604800
+  prefix: educate
+security:
+  route:
+    login: /login
+    refresh: /refresh
+  source:
+    key: formal:authorities:resources
+  ignores: /captcha
+    - /favicon.ico
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+    logfile:
+      enabled: true
+      external-file: ./logs/educate.log
+logging:
+  file:
+    path: ./logs/
+  level:
+    com.sora.modules.*.mapper: debug

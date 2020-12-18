@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sora.modules.grant.mapper.RoleMapper">
+    <resultMap id="BaseResultMap" type="com.sora.modules.grant.entity.Role">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="label" property="label" jdbcType="VARCHAR"/>
+        <result column="sort" property="sort" jdbcType="INTEGER"/>
+        <result column="fixed" property="fixed" jdbcType="BIT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="findAllByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select a.* from role a inner join user_role b on a.id = b.role_id where b.user_id = #{userId}
+    </select>
+    <select id="findAllByAuthId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select a.* from role a inner join role_auth b on a.id = b.role_id where b.auth_id  = #{authId}
+    </select>
+    <select id="findAll" resultMap="BaseResultMap">
+        select * from role
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="label != null and label != ''">
+                and label like concat('%',#{label},'%')
+            </if>
+        </where>
+        order by coalesce(modify_time,create_time) desc
+    </select>
+</mapper>

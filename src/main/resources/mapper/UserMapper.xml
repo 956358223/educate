@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sora.modules.grant.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.sora.modules.grant.entity.User">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="sole" property="sole" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="identify" property="identify" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="INTEGER"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="qq" property="qq" jdbcType="VARCHAR"/>
+        <result column="profile" property="profile" jdbcType="VARCHAR"/>
+        <result column="enabled" property="enabled" jdbcType="TINYINT"/>
+        <result column="scale" property="scale" jdbcType="DOUBLE"/>
+        <result column="pid" property="pid" jdbcType="BIGINT"/>
+        <result column="count" property="count" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+        <collection property="roles" column="id" select="com.sora.modules.grant.mapper.RoleMapper.findAllByUserId"/>
+    </resultMap>
+    <resultMap id="CascadeMap" type="com.sora.modules.grant.entity.User" extends="BaseResultMap">
+        <collection property="children" column="id" select="findAllByPid"/>
+    </resultMap>
+    <select id="findAllByPid" resultMap="BaseResultMap">
+        select * from user where pid = #{pid}
+    </select>
+    <select id="findAll" resultMap="BaseResultMap">
+        select * from user
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone like concat('%',#{phone},'%')
+            </if>
+        </where>
+        order by coalesce(modify_time , create_time) desc
+    </select>
+</mapper>
